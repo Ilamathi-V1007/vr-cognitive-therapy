@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rule-Switch Lamps</title>
+<style>
+html,body{margin:0;height:100%;background:#12141f;color:#efeadf;font-family:Georgia,serif;overflow:hidden}
+#bar{position:fixed;top:0;left:0;right:0;display:flex;flex-wrap:wrap;gap:.4rem;padding:.5rem;align-items:center;z-index:2}
+button{font:inherit;padding:.5rem .8rem;background:#1f2333;color:#efeadf;border:1px solid #f0b429;border-radius:.4rem}
+button:focus-visible{outline:3px solid #f0b429}
+#st{font-size:.9rem;opacity:.8}
+canvas{position:fixed;inset:0;width:100%;height:100%}
+</style>
+<div id="bar">
+ <button id="cam">Start camera</button><button id="mouse">Mouse mode</button><button id="flip">Flip camera</button>
+ <button id="mir">Mirror</button><button id="vr">VR mode</button><button id="exp">Export</button><button id="clr">Clear data</button>
+ <span id="st">Choose camera or mouse to begin.</span>
+</div>
+<canvas id="view"></canvas>
+<script type="module" src="rules.js"></script>
