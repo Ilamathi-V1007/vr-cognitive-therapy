@@ -3,7 +3,7 @@
 Affordable, adaptive cognitive-motor therapy for elderly patients, running in a phone browser with a Cardboard-class VR box. Free stack only.
 
 ## Modules
-- `modules/kolam/` Module 1: Kolam Recall and Trace (spatial sequence memory, hand tracking via camera)
+- modules/kolam/ Module 1: Kolam Recall and Trace (draw-from-memory kolam; span, accuracy and speed scored in-game)
 - `core/` shared code: `handtracker.js` (MediaPipe), `storage.js` (IndexedDB)
 
 ## Run locally
