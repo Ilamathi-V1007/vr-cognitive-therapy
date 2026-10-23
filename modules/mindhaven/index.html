@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mindhaven: The Memory Isles</title>
+<style>
+:root{--sage:#9fb8a0;--teal:#2f7f86;--sky:#cfe6f0;--cream:#fbf6ea;--lav:#b9a9d6;--amber:#e8a24c;--ink:#24323a;--card:#fffdf7}
+*{box-sizing:border-box}body{margin:0;font:1rem/1.5 system-ui,Segoe UI,sans-serif;color:var(--ink);background:linear-gradient(#cfe6f0,#fbf6ea 60%);min-height:100vh;padding-bottom:5.5rem}
+header{padding:.8rem 1rem;display:flex;align-items:baseline;gap:.6rem}h1{font:700 1.5rem Georgia,serif;margin:0;color:var(--teal)}header span{opacity:.75}
+main{max-width:46rem;margin:0 auto;padding:0 1rem}main:focus{outline:none}
+h2{font:700 1.5rem Georgia,serif;margin:.5rem 0}.card{background:var(--card);border-radius:1.2rem;padding:1.1rem;margin:.8rem 0;box-shadow:0 4px 14px #2f7f8626}
+button,select{font:inherit;color:inherit}.btn{min-height:3.2rem;padding:.6rem 1.2rem;border-radius:1rem;border:2px solid var(--teal);background:var(--card);cursor:pointer;margin:.25rem;box-shadow:0 3px 0 #2f7f8655}
+.btn.pri{background:var(--teal);color:#fff}.btn:disabled{opacity:.45;cursor:default}.btn:active{transform:translateY(2px);box-shadow:none}
+:focus-visible{outline:4px solid #7a4bd6;outline-offset:2px}
+.grid{display:flex;flex-wrap:wrap;gap:.5rem}.big{font-size:2.4rem;line-height:1.1;min-width:5.5rem;display:inline-flex;flex-direction:column;align-items:center;font-size:2rem}.big small{font-size:.8rem}
+.map{width:100%;border-radius:1.4rem;box-shadow:0 6px 20px #2f7f863a;background:var(--sky)}.reg{cursor:pointer;transition:filter .6s}.reg:focus-visible{outline:4px solid #7a4bd6}
+.reg text{font-family:system-ui;fill:var(--ink)}.lant{animation:glow 3s ease-in-out infinite}@keyframes glow{50%{opacity:.55}}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:.3rem;padding:.5rem;background:#fffdf7ee;border-top:1px solid #0002}
+nav button{flex:1;max-width:9rem;min-height:3.2rem;border:0;border-radius:.9rem;background:transparent;cursor:pointer}nav button[aria-current=page]{background:var(--sky);font-weight:700}
+.msg{min-height:1.6rem;font-weight:600;color:var(--teal)}.sr{position:absolute;left:-9999px}small.note{opacity:.8}
+.bar{height:.9rem;background:#0001;border-radius:1rem;overflow:hidden}.bar i{display:block;height:100%;background:var(--amber)}
+.hc{--ink:#000;--card:#fff;--teal:#003f46;background:#fff}.hc .card,.hc .btn{border:2px solid #000}
+.calm *{animation:none!important;transition:none!important}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.pop{animation:pop .6s}@keyframes pop{from{transform:scale(.6);opacity:0}}
+.em{font-size:2.2rem;line-height:1.1;display:block}.opt{min-width:7rem;min-height:5rem;display:inline-flex;flex-direction:column;align-items:center;justify-content:center}.row{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.boat{animation:sail 16s ease-in-out infinite alternate}@keyframes sail{to{transform:translateX(330px)}}.bird{animation:fly 11s linear infinite}@keyframes fly{from{transform:translateX(-40px)}to{transform:translateX(520px)}}
+</style>
+<header><h1>Mindhaven</h1><span>The Memory Isles</span></header>
+<main id="app" tabindex="-1"></main>
+<p id="live" class="sr" aria-live="polite"></p>
+<nav aria-label="Main"><button data-act="nav" data-v="home">Island</button><button data-act="nav" data-v="progress">Progress</button><button data-act="nav" data-v="settings">Settings</button><button data-act="nav" data-v="help">Help</button></nav>
+<script type="module" src="mindhaven.js"></script>

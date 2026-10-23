@@ -1,0 +1,21 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bloom: Cognitive Therapy Hub</title>
+<style>
+:root{--sun:#ffd98a;--peach:#ffb59a;--leaf:#6fbf86;--sky:#bfe3f2;--ink:#2f3d3c;--card:#fffdf8;--teal:#2a7f86}
+*{box-sizing:border-box}body{margin:0;font:1rem/1.5 system-ui,Segoe UI,sans-serif;color:var(--ink);background:linear-gradient(#ffe9b8,#ffd1bd 38%,#d6efe0);min-height:100vh;padding-bottom:5.5rem}
+header{max-width:60rem;margin:0 auto;padding:.9rem 1rem}h1{font:700 1.8rem Georgia,serif;margin:0;color:#b4561f}h2{font:700 1.4rem Georgia,serif;margin:.4rem 0}h3{margin:.2rem 0}
+main{max-width:60rem;margin:0 auto;padding:0 1rem}main:focus{outline:none}.card{background:var(--card);border-radius:1.4rem;padding:1.1rem;margin:.8rem 0;box-shadow:0 5px 16px #b4561f26}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:.8rem}.tile{background:var(--card);border:3px solid #fff;border-radius:1.4rem;padding:1rem;text-align:center;cursor:pointer;box-shadow:0 5px 14px #b4561f2e;font:inherit;color:inherit}.tile:hover{transform:translateY(-2px)}
+.em{font-size:2.6rem;line-height:1.1;display:block}.tile .em{font-size:3rem}small,.note{opacity:.8}
+.btn{min-height:3.4rem;padding:.6rem 1.3rem;border-radius:1.1rem;border:3px solid var(--teal);background:#fff;font:inherit;font-weight:600;cursor:pointer;margin:.25rem;color:var(--ink)}.btn.pri{background:var(--teal);color:#fff}.opt{min-width:7rem;min-height:5rem;display:inline-flex;flex-direction:column;align-items:center;justify-content:center}.opt .em{font-size:2.2rem}
+:focus-visible{outline:4px solid #7a4bd6;outline-offset:2px}.row{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.bar{height:1rem;background:#0001;border-radius:1rem;overflow:hidden;min-width:8rem;flex:1}.bar i{display:block;height:100%;background:var(--leaf)}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:.4rem;padding:.5rem;background:#fffdf8ee;border-top:1px solid #0002}nav button{flex:1;max-width:10rem;min-height:3.2rem;border:0;border-radius:1rem;background:transparent;font:inherit;cursor:pointer}nav button[aria-current=page]{background:var(--sun);font-weight:700}
+table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{border-bottom:1px solid #0002;padding:.35rem;text-align:left}.pop{animation:pop .6s}@keyframes pop{from{transform:scale(.7);opacity:0}}
+.hc{--ink:#000;--card:#fff;--teal:#003f46;background:#fff}.calm *{animation:none!important}.sr{position:absolute;left:-9999px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}@media print{nav,.no{display:none}body{background:#fff}.card{box-shadow:none;border:1px solid #999}}
+</style>
+<header><h1>🌼 Bloom</h1><small>Cognitive therapy games. Every round helps your garden grow.</small></header>
+<main id="app" tabindex="-1"></main><p id="live" class="sr" aria-live="polite"></p>
+<nav aria-label="Main"><button data-a="nav" data-v="home">Games</button><button data-a="nav" data-v="report">Session report</button><button data-a="nav" data-v="settings">Settings</button></nav>
+<script type="module" src="hub.js"></script>
