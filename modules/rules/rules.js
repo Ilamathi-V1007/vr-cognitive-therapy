@@ -10,7 +10,7 @@ const cfg = {facing: q.get("cam") || (mobile ? "environment" : "user")};
 cfg.mirror = q.has("mirror") ? q.get("mirror") === "1" : cfg.facing === "user";
 let tracker = null, mouse = false, vr = false, fit = {x: 0, y: 0, s: 1};
 const cur = {x: W / 2, y: H / 2}, mpos = {x: W / 2, y: H / 2};
-const COL = {green: "#3ddc84", blue: "#4aa3ff", red: "#ff5a5a"}, NAME = {L: "LEFT", R: "RIGHT"};
+const COL = {green: "#3d9a5b", blue: "#2f6fbf", red: "#d9534f"}, NAME = {L: "LEFT", R: "RIGHT"};
 // Difficulty levels: response window (ms), trials between silent rule swaps, whether the rule reminder stays visible
 const LV = [{win: 4000, sw: 999, leg: 1}, {win: 3500, sw: 12, leg: 1}, {win: 3000, sw: 10, leg: 1}, {win: 3000, sw: 8, leg: 0}, {win: 2500, sw: 6, leg: 0}, {win: 2000, sw: 5, leg: 0}];
 const S = {phase: "idle", level: 0, rule: {green: "L", blue: "R"}, prev: {green: "L", blue: "R"}, pend: false, since: 0, color: "", isSwitch: false,
@@ -45,6 +45,7 @@ function respond(dir, el) {
   S.log.push(rec); S.block.push(rec); S.score += rec.points; saveTrial(rec);
   Object.assign(S, {phase: "feedback", t: performance.now(), msg: correct ? "Good" : err === "commission" ? "That one means stay still" : err === "omission" ? "A little quicker next time" : "Check the rule", sub: ""});
 }
+const pal = () => vr ? {BG: "#24424a", INK: "#fff3dc", ACC: "#ffb454", ZONE: "#335a64"} : {BG: "#fff3dc", INK: "#2f3d3c", ACC: "#e8833a", ZONE: "#ffe3c2"};
 function blockEnd(now) {
   const B = S.block, win = LV[S.level].win; S.block = [];
   const go = B.filter(r => r.color !== "red"), red = B.filter(r => r.color === "red"), ok = go.filter(r => r.correct), nz = v => isNaN(v) ? 0 : v;
@@ -61,7 +62,7 @@ function blockEnd(now) {
   const d = decide(S.cm, val, fatigue); S.cm.push(val); S.level = clamp(S.level + d.move, 0, 5);
   const p = v => v == null ? "-" : Math.round(100 * v);
   saveTrial({module: "rules", type: "block", ts: Date.now(), cmci: val, ...comps, fatigue, move: d.move, level: S.level});
-  Object.assign(S, {phase: "rest", restUntil: now + (fatigue ? 20000 : 4000), msg: fatigue ? "Please rest for a little while" : "Rest a moment. Hold the circle when ready", sub: `CMCI ${val}   C ${p(C)}  M ${p(M)}  E ${p(E)}  DT ${p(DT)}`, sub2: summary()});
+  Object.assign(S, {phase: "rest", restUntil: now + (fatigue ? 20000 : 4000), msg: fatigue ? "Please rest for a little while" : "🌸 +1 flower, ⭐ +3. Rest, then hold the circle", sub: `CMCI ${val}   C ${p(C)}  M ${p(M)}  E ${p(E)}  DT ${p(DT)}`, sub2: summary()});
 }
 function step(now, dt) {
   const raw = mouse ? mpos : {x: (tracker.x - .1) / .8 * W, y: (tracker.y - .1) / .8 * H};
@@ -76,27 +77,28 @@ function step(now, dt) {
   if (!go) S.dw = {ms: 0, lock: false}; else if (!S.dw.lock && (S.dw.ms += dt) >= DWELL) { S.dw.lock = true; nextTrial(); }
 }
 function draw(now) {
-  g.fillStyle = "#12141f"; g.fillRect(0, 0, W, H);
+  const {BG, INK, ACC, ZONE} = pal();
+  g.fillStyle = BG; g.fillRect(0, 0, W, H);
   if (tracker && !mouse && !vr) { g.save(); g.globalAlpha = .22; if (cfg.mirror) { g.translate(W, 0); g.scale(-1, 1); } g.drawImage(tracker.video, 0, 0, W, H); g.restore(); }
   const play = !["idle", "rest"].includes(S.phase);
   g.textAlign = "center";
-  if (play) { g.fillStyle = "#1f2540"; g.fillRect(0, 100, W * .28, 280); g.fillRect(W * .72, 100, W * .28, 280);
-    g.fillStyle = "#efeadf"; g.font = "20px Georgia"; g.fillText("< LEFT", W * .14, 245); g.fillText("RIGHT >", W * .86, 245);
-    g.strokeStyle = "#f0b429"; g.lineWidth = 3; g.beginPath(); g.arc(W / 2, H / 2, 70, 0, 7); g.stroke();
+  if (play) { g.fillStyle = ZONE; g.fillRect(0, 100, W * .28, 280); g.fillRect(W * .72, 100, W * .28, 280);
+    g.fillStyle = INK; g.font = "20px Georgia"; g.fillText("< LEFT", W * .14, 245); g.fillText("RIGHT >", W * .86, 245);
+    g.strokeStyle = ACC; g.lineWidth = 3; g.beginPath(); g.arc(W / 2, H / 2, 70, 0, 7); g.stroke();
     if (S.phase === "stim" || S.phase === "feedback") { g.fillStyle = COL[S.color]; g.beginPath(); g.arc(W / 2, H / 2, 46, 0, 7); g.fill(); }
     if (LV[S.level].leg) { g.font = "15px Georgia"; const items = [["green", `Green: ${NAME[S.rule.green]}`], ["blue", `Blue: ${NAME[S.rule.blue]}`], ["red", "Red: STAY"]];
       items.forEach(([c, t], i) => { g.fillStyle = COL[c]; g.fillText(t, W * (.2 + .3 * i), 96); }); } }
-  else { g.strokeStyle = "#f0b429"; g.lineWidth = 3; g.beginPath(); g.arc(W / 2, H / 2, 55, 0, 7); g.stroke();
+  else { g.strokeStyle = ACC; g.lineWidth = 3; g.beginPath(); g.arc(W / 2, H / 2, 55, 0, 7); g.stroke();
     if (S.dw.ms) { g.lineWidth = 8; g.beginPath(); g.arc(W / 2, H / 2, 55, -1.57, -1.57 + 6.28 * S.dw.ms / DWELL); g.stroke(); }
-    g.fillStyle = "#f0b429"; g.beginPath(); g.arc(W / 2, H / 2, 14, 0, 7); g.fill(); }
-  g.fillStyle = "#efeadf"; g.font = "22px Georgia"; g.fillText(S.msg, W / 2, 40);
+    g.fillStyle = ACC; g.beginPath(); g.arc(W / 2, H / 2, 14, 0, 7); g.fill(); }
+  g.fillStyle = INK; g.font = "22px Georgia"; g.fillText(S.msg, W / 2, 40);
   g.font = "15px Georgia"; g.fillText(S.sub, W / 2, 68); g.fillText(S.sub2, W / 2, 92);
   g.font = "14px Georgia"; g.fillText(`Level ${S.level + 1}  CMCI ${S.cm.at(-1) ?? "-"}  Points ${S.score}  Trial ${S.n}`, W / 2, H - 16);
-  if (!mouse && tracker && !tracker.tracked) { g.fillStyle = "#f0b429"; g.fillText("Show your hand to the camera", W / 2, H - 44); }
-  g.fillStyle = "#f0b429"; g.beginPath(); g.arc(cur.x, cur.y, 11, 0, 7); g.fill();
+  if (!mouse && tracker && !tracker.tracked) { g.fillStyle = ACC; g.fillText("Show your hand to the camera", W / 2, H - 44); }
+  g.fillStyle = ACC; g.beginPath(); g.arc(cur.x, cur.y, 11, 0, 7); g.fill();
 }
 function render() {
-  view.width = innerWidth * devicePixelRatio; view.height = innerHeight * devicePixelRatio;
+  view.width = view.clientWidth * devicePixelRatio; view.height = view.clientHeight * devicePixelRatio;
   vg.fillStyle = "#000"; vg.fillRect(0, 0, view.width, view.height);
   const panes = vr ? 2 : 1, pw = view.width / panes, s = Math.min(pw / W, view.height / H) * (vr ? .85 : .98);
   fit = {s: s / devicePixelRatio, x: (pw - W * s) / 2 / devicePixelRatio, y: (view.height - H * s) / 2 / devicePixelRatio};
@@ -114,7 +116,7 @@ $("cam").onclick = async () => {
 $("mouse").onclick = () => { mouse = true; say("Mouse mode: move the pointer"); };
 $("flip").onclick = () => { cfg.facing = cfg.facing === "user" ? "environment" : "user"; cfg.mirror = cfg.facing === "user"; $("cam").click(); };
 $("mir").onclick = () => { cfg.mirror = !cfg.mirror; if (tracker) tracker.mirror = cfg.mirror; say("Mirror " + (cfg.mirror ? "on" : "off")); };
-$("vr").onclick = async () => { vr = true; $("bar").hidden = true; await document.documentElement.requestFullscreen?.().catch(() => {}); screen.orientation?.lock?.("landscape").catch(() => {}); };
-view.addEventListener("pointerdown", () => { if (vr) { vr = false; $("bar").hidden = false; document.exitFullscreen?.().catch(() => {}); } });
-view.addEventListener("pointermove", e => { mpos.x = (e.clientX - fit.x) / fit.s; mpos.y = (e.clientY - fit.y) / fit.s; });
+$("vr").onclick = async () => { vr = true; $("bar").hidden = true; document.body.classList.add("vr"); await document.documentElement.requestFullscreen?.().catch(() => {}); screen.orientation?.lock?.("landscape").catch(() => {}); };
+view.addEventListener("pointerdown", () => { if (vr) { vr = false; $("bar").hidden = false; document.body.classList.remove("vr"); document.exitFullscreen?.().catch(() => {}); } });
+view.addEventListener("pointermove", e => { const rc = view.getBoundingClientRect(); mpos.x = (e.clientX - rc.left - fit.x) / fit.s; mpos.y = (e.clientY - rc.top - fit.y) / fit.s; });
 $("exp").onclick = exportJSON; $("clr").onclick = () => confirm("Delete all stored trials on this device?") && clearTrials();

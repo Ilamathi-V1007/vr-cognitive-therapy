@@ -53,6 +53,7 @@ function endTrial(ok) {
   if (!ok) S.retry = S.seq;                      // errorless-style support: show the same kolam again once
   Object.assign(S, {phase: "feedback", t: performance.now(), msg: ok ? (S.errors ? "Completed" : "Perfect!") : "Good try. Let us look again", sub: `+${rec.points} points`});
 }
+const pal = () => vr ? {BG: "#24424a", INK: "#fff3dc", ACC: "#ffb454", ZONE: "#335a64"} : {BG: "#fff3dc", INK: "#2f3d3c", ACC: "#e8833a", ZONE: "#ffe3c2"};
 function blockEnd(now) {
   const B = S.block.filter(r => !r.cued); S.block = [];
   if (!B.length) return startTrial();
@@ -68,7 +69,7 @@ function blockEnd(now) {
   else if (d.move < 0) { if (S.len > 3) S.len--; else if (S.grid > 4) { S.grid--; S.len = 3; } }
   const p = v => Math.round(100 * v);
   saveTrial({module: "kolam", type: "block", ts: Date.now(), cmci: val, C: +C.toFixed(2), M: +M.toFixed(2), E: +E.toFixed(2), fatigue, move: d.move, grid: S.grid, len: S.len});
-  Object.assign(S, {phase: "rest", restUntil: now + (fatigue ? 20000 : 4000), msg: fatigue ? "Please rest for a little while" : "Rest a moment. Hold the circle when ready", sub: `CMCI ${val}   C ${p(C)}  M ${p(M)}  E ${p(E)}`, sub2: summary()});
+  Object.assign(S, {phase: "rest", restUntil: now + (fatigue ? 20000 : 4000), msg: fatigue ? "Please rest for a little while" : "🌸 +1 flower, ⭐ +3. Rest, then hold the circle", sub: `CMCI ${val}   C ${p(C)}  M ${p(M)}  E ${p(E)}`, sub2: summary()});
 }
 function step(now, dt) {
   const raw = mouse ? mpos : {x: (tracker.x - .1) / .8 * W, y: (tracker.y - .1) / .8 * H};
@@ -97,26 +98,27 @@ function curve(p, c, w) {                        // smooth line through cell cen
   g.lineTo(p.at(-1).x, p.at(-1).y); g.stroke();
 }
 function draw(now) {
-  g.fillStyle = "#12141f"; g.fillRect(0, 0, W, H);
+  const {BG, INK, ACC, ZONE} = pal();
+  g.fillStyle = BG; g.fillRect(0, 0, W, H);
   if (tracker && !mouse && !vr) { g.save(); g.globalAlpha = .22; if (cfg.mirror) { g.translate(W, 0); g.scale(-1, 1); } g.drawImage(tracker.video, 0, 0, W, H); g.restore(); }
   g.lineCap = g.lineJoin = "round";
   const C = cells(S.grid), pts = ids => ids.map(i => C[i]), play = !["idle", "rest"].includes(S.phase);
-  if (S.phase === "show") curve(pts(S.seq.slice(0, Math.min(S.len, Math.floor((now - S.t) / STEP) + 1))), "#f0b429", 9);
-  if (S.phase === "recall") { const ink = pts(S.seq.slice(0, S.hit)); curve(ink.concat([cur]), "#efeadf", 9);
-    if (!S.hit) { g.strokeStyle = "#f0b429"; g.lineWidth = 3; g.beginPath(); g.arc(C[S.seq[0]].x, C[S.seq[0]].y, 16, 0, 7); g.stroke(); } }
-  if (S.phase === "feedback") curve(pts(S.seq), S.hit === S.len ? "#efeadf" : "#f0b429", 9);
-  if (play) pulli(S.grid).forEach(d => { g.fillStyle = "#efeadf"; g.beginPath(); g.arc(d.x, d.y, 7, 0, 7); g.fill(); });
-  else { g.strokeStyle = "#f0b429"; g.lineWidth = 3; g.beginPath(); g.arc(W / 2, H / 2, 55, 0, 7); g.stroke();
+  if (S.phase === "show") curve(pts(S.seq.slice(0, Math.min(S.len, Math.floor((now - S.t) / STEP) + 1))), ACC, 9);
+  if (S.phase === "recall") { const ink = pts(S.seq.slice(0, S.hit)); curve(ink.concat([cur]), INK, 9);
+    if (!S.hit) { g.strokeStyle = ACC; g.lineWidth = 3; g.beginPath(); g.arc(C[S.seq[0]].x, C[S.seq[0]].y, 16, 0, 7); g.stroke(); } }
+  if (S.phase === "feedback") curve(pts(S.seq), S.hit === S.len ? INK : ACC, 9);
+  if (play) pulli(S.grid).forEach(d => { g.fillStyle = INK; g.beginPath(); g.arc(d.x, d.y, 7, 0, 7); g.fill(); });
+  else { g.strokeStyle = ACC; g.lineWidth = 3; g.beginPath(); g.arc(W / 2, H / 2, 55, 0, 7); g.stroke();
     if (S.dw.ms) { g.lineWidth = 8; g.beginPath(); g.arc(W / 2, H / 2, 55, -1.57, -1.57 + 6.28 * S.dw.ms / DWELL); g.stroke(); }
-    g.fillStyle = "#f0b429"; g.beginPath(); g.arc(W / 2, H / 2, 14, 0, 7); g.fill(); }
-  g.fillStyle = "#efeadf"; g.textAlign = "center"; g.font = "22px Georgia"; g.fillText(S.msg, W / 2, 40);
+    g.fillStyle = ACC; g.beginPath(); g.arc(W / 2, H / 2, 14, 0, 7); g.fill(); }
+  g.fillStyle = INK; g.textAlign = "center"; g.font = "22px Georgia"; g.fillText(S.msg, W / 2, 40);
   g.font = "16px Georgia"; g.fillText(S.sub, W / 2, 68); g.fillText(S.sub2, W / 2, 92);
   g.font = "14px Georgia"; g.fillText(`Pulli ${S.grid}x${S.grid}  Length ${S.len}  Span ${span()}  CMCI ${S.cm.at(-1) ?? "-"}  Points ${S.score}  Trial ${S.n}`, W / 2, H - 16);
-  if (!mouse && tracker && !tracker.tracked) { g.fillStyle = "#f0b429"; g.fillText("Show your hand to the camera", W / 2, H - 44); }
-  g.fillStyle = "#f0b429"; g.beginPath(); g.arc(cur.x, cur.y, 11, 0, 7); g.fill();
+  if (!mouse && tracker && !tracker.tracked) { g.fillStyle = ACC; g.fillText("Show your hand to the camera", W / 2, H - 44); }
+  g.fillStyle = ACC; g.beginPath(); g.arc(cur.x, cur.y, 11, 0, 7); g.fill();
 }
 function render() {
-  view.width = innerWidth * devicePixelRatio; view.height = innerHeight * devicePixelRatio;
+  view.width = view.clientWidth * devicePixelRatio; view.height = view.clientHeight * devicePixelRatio;
   vg.fillStyle = "#000"; vg.fillRect(0, 0, view.width, view.height);
   const panes = vr ? 2 : 1, pw = view.width / panes, s = Math.min(pw / W, view.height / H) * (vr ? .85 : .98);
   fit = {s: s / devicePixelRatio, x: (pw - W * s) / 2 / devicePixelRatio, y: (view.height - H * s) / 2 / devicePixelRatio};
@@ -134,7 +136,7 @@ $("cam").onclick = async () => {
 $("mouse").onclick = () => { mouse = true; say("Mouse mode: move the pointer"); };
 $("flip").onclick = () => { cfg.facing = cfg.facing === "user" ? "environment" : "user"; cfg.mirror = cfg.facing === "user"; $("cam").click(); };
 $("mir").onclick = () => { cfg.mirror = !cfg.mirror; if (tracker) tracker.mirror = cfg.mirror; say("Mirror " + (cfg.mirror ? "on" : "off")); };
-$("vr").onclick = async () => { vr = true; $("bar").hidden = true; await document.documentElement.requestFullscreen?.().catch(() => {}); screen.orientation?.lock?.("landscape").catch(() => {}); };
-view.addEventListener("pointerdown", () => { if (vr) { vr = false; $("bar").hidden = false; document.exitFullscreen?.().catch(() => {}); } });
-view.addEventListener("pointermove", e => { mpos.x = (e.clientX - fit.x) / fit.s; mpos.y = (e.clientY - fit.y) / fit.s; });
+$("vr").onclick = async () => { vr = true; $("bar").hidden = true; document.body.classList.add("vr"); await document.documentElement.requestFullscreen?.().catch(() => {}); screen.orientation?.lock?.("landscape").catch(() => {}); };
+view.addEventListener("pointerdown", () => { if (vr) { vr = false; $("bar").hidden = false; document.body.classList.remove("vr"); document.exitFullscreen?.().catch(() => {}); } });
+view.addEventListener("pointermove", e => { const rc = view.getBoundingClientRect(); mpos.x = (e.clientX - rc.left - fit.x) / fit.s; mpos.y = (e.clientY - rc.top - fit.y) / fit.s; });
 $("exp").onclick = exportJSON; $("clr").onclick = () => confirm("Delete all stored trials on this device?") && clearTrials();
